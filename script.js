@@ -1,20 +1,25 @@
 const contactLinks = {
-  facebook: "",
-  instagram: "",
-  tiktok: "",
-  phone: "",
-  googleMaps: "",
-  googleMapsEmbed: "",
+  facebook: "https://www.facebook.com/profile.php?id=61591787280473",
+  instagram: "https://www.instagram.com/tatunashvili_mako/",
+  tiktok: "https://www.tiktok.com/",
+  whatsAppNumber: "+995577779952",
+  googleMaps: "https://maps.app.goo.gl/9T3Chng8KaHrdHcV8",
+  googleMapsEmbed:
+    "https://maps.google.com/maps?q=41.8994893,44.6951196&z=17&output=embed",
 };
 
+const whatsAppNumber = contactLinks.whatsAppNumber.replace(/\D/g, "");
+
 document.querySelectorAll("[data-contact-link]").forEach((link) => {
-  const url = contactLinks[link.dataset.contactLink];
+  const linkKey = link.dataset.contactLink;
+  const url =
+    linkKey === "phone"
+      ? whatsAppNumber && `https://wa.me/${whatsAppNumber}`
+      : contactLinks[linkKey];
   if (url) {
     link.href = url;
-    if (link.dataset.contactLink !== "phone") {
-      link.target = "_blank";
-      link.rel = "noopener noreferrer";
-    }
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
     link.removeAttribute("aria-disabled");
   } else if (link.dataset.contactLink === "googleMaps") {
     link.href = "#google-map";

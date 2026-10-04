@@ -55,7 +55,7 @@ img {
   margin: 0 0 22px;
   color: var(--rust);
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: 0;
   text-transform: uppercase;
 }
@@ -67,9 +67,9 @@ img {
 }
 .display {
   margin: 0;
-  font-family: var(--serif);
+  font-family: var(--sans);
   font-size: clamp(38px, 5vw, 66px);
-  font-weight: 400;
+  font-weight: 500;
   line-height: 1.08;
   letter-spacing: 0;
 }
@@ -140,12 +140,15 @@ img {
   color: #fff;
   transition: color 0.2s ease;
 }
-.site-header:hover,
-.site-header:focus-within,
 .site-header.menu-open,
 .site-header.mobile-open,
 .site-header.is-scrolled {
   background: var(--paper);
+  color: var(--ink);
+}
+.site-header.mobile-open .menu-toggle,
+.site-header.is-scrolled .menu-toggle {
+  border-color: var(--ink);
   color: var(--ink);
 }
 .nav {
@@ -195,8 +198,6 @@ img {
   cursor: pointer;
   font: inherit;
 }
-.site-header:hover .nav-book,
-.site-header:focus-within .nav-book,
 .site-header.menu-open .nav-book,
 .site-header.is-scrolled .nav-book {
   border-color: var(--ink);
@@ -258,29 +259,37 @@ img {
   outline: 2px solid currentColor;
   outline-offset: 3px;
 }
-.social-link svg {
+.social-icon {
   display: block;
   width: 20px;
   height: 20px;
-  fill: none;
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 1.8;
+  background-color: currentColor;
+  mask-position: center;
+  mask-repeat: no-repeat;
+  mask-size: contain;
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
 }
-.social-link svg #icon-facebook,
-.social-link svg #icon-facebook path {
-  stroke: none;
+.social-icon-facebook {
+  mask-image: url("./icons/facebook-f-brands-solid-full.svg");
+  -webkit-mask-image: url("./icons/facebook-f-brands-solid-full.svg");
 }
-.social-link svg .icon-fill {
-  fill: currentColor;
-  stroke: none;
+.social-icon-instagram {
+  mask-image: url("./icons/instagram-brands-solid-full.svg");
+  -webkit-mask-image: url("./icons/instagram-brands-solid-full.svg");
 }
-.icon-definitions {
-  position: absolute;
-  width: 0;
-  height: 0;
-  overflow: hidden;
+.social-icon-tiktok {
+  mask-image: url("./icons/tiktok-brands-solid-full.svg");
+  -webkit-mask-image: url("./icons/tiktok-brands-solid-full.svg");
+}
+.social-icon-phone {
+  mask-image: url("./icons/phone-solid-full.svg");
+  -webkit-mask-image: url("./icons/phone-solid-full.svg");
+}
+.social-icon-location {
+  mask-image: url("./icons/location-dot-solid-full.svg");
+  -webkit-mask-image: url("./icons/location-dot-solid-full.svg");
 }
 .mega-menu-inner {
   display: grid;
@@ -450,13 +459,40 @@ img {
 }
 .hero-note {
   position: absolute;
-  right: 0;
+  right: 24px;
   bottom: 44px;
   display: flex;
   align-items: center;
   gap: 12px;
   color: white;
   font-size: 11px;
+}
+.hero-phone {
+  position: absolute;
+  bottom: 44px;
+  left: 0;
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 12px;
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  transition: opacity 0.2s ease;
+}
+.hero-phone::before {
+  width: 32px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.8);
+  content: "";
+}
+.hero-phone:hover {
+  opacity: 0.75;
+}
+.hero-phone:focus-visible {
+  outline: 2px solid white;
+  outline-offset: 4px;
 }
 .hero-note::before {
   width: 38px;
@@ -636,16 +672,6 @@ img {
   height: 100%;
   object-fit: cover;
   object-position: center 34%;
-}
-.doctor-photo::after {
-  position: absolute;
-  right: -14px;
-  bottom: -14px;
-  z-index: -1;
-  width: 70%;
-  height: 70%;
-  border: 1px solid #b8b8ac;
-  content: "";
 }
 .doctor-copy {
   padding: 24px 0;
@@ -948,12 +974,9 @@ footer {
   color: var(--muted);
   font-size: 13px;
 }
-.map-placeholder svg {
+.map-placeholder .social-icon {
   width: 24px;
   height: 24px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.8;
 }
 .footer-cta {
   min-height: 44px;
@@ -983,10 +1006,15 @@ footer {
     transform: translateY(0);
   }
 }
-
 @media (max-width: 1000px) {
   .nav-book {
     display: none;
+  }
+  .footer-row {
+    flex-wrap: wrap;
+  }
+  .procedure-card h3 {
+    font-size: clamp(32px, 4vw, 40px);
   }
 }
 
@@ -1229,10 +1257,10 @@ footer {
     min-height: 390px;
   }
   .procedure-card-content {
-    padding: 28px 22px;
+    padding: 28px 16px;
   }
   .procedure-card h3 {
-    font-size: 34px;
+    font-size: clamp(26px, 7.5vw, 34px);
   }
   .feature-story {
     min-height: 390px;
