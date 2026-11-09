@@ -3,12 +3,35 @@ const contactLinks = {
   instagram: "https://www.instagram.com/tatunashvili_mako/",
   tiktok: "https://www.tiktok.com/",
   whatsAppNumber: "+995577779952",
-  googleMaps: "https://maps.app.goo.gl/9T3Chng8KaHrdHcV8",
+  googleMaps: "https://maps.app.goo.gl/arwboGLar9Eo3XF78",
   googleMapsEmbed:
     "https://maps.google.com/maps?q=41.8994893,44.6951196&z=17&output=embed",
 };
 
 const whatsAppNumber = contactLinks.whatsAppNumber.replace(/\D/g, "");
+const bookingStatus = document.querySelector(".form-status");
+
+const buildBookingWhatsAppUrl = (formData) => {
+  const name = (formData.get("name") || "").trim();
+  const phone = (formData.get("phone") || "").trim();
+  const service = (formData.get("service") || "").trim();
+  const message = (formData.get("message") || "").trim();
+
+  const details = [
+    `სახელი: ${name || "არ არის მოწოდებული"}`,
+    `ტელეფონი: ${phone || "არ არის მოწოდებული"}`,
+    `სერვისი: ${service || "არ არის მოწოდებული"}`,
+    message ? `შეტყობინება: ${message}` : "",
+  ]
+    .filter(Boolean)
+    .join("\n");
+
+  const encodedText = encodeURIComponent(
+    `მოგესალმებით! მჭირდება კონსულტაციის დაჯავშნა.\n\n${details}`,
+  );
+
+  return `https://wa.me/${whatsAppNumber}?text=${encodedText}`;
+};
 
 document.querySelectorAll("[data-contact-link]").forEach((link) => {
   const linkKey = link.dataset.contactLink;
@@ -115,6 +138,13 @@ document.addEventListener("keydown", (event) => {
 document.querySelector("#year").textContent = new Date().getFullYear();
 document.querySelector(".booking-form").addEventListener("submit", (event) => {
   event.preventDefault();
-  document.querySelector(".form-status").textContent =
-    "მოთხოვნა არ გაგზავნილა — ჩაწერისთვის ჯერ საჭიროა ექიმის საკონტაქტო არხის დაკავშირება.";
+
+  const form = event.currentTarget;
+  const formData = new FormData(form);
+  const whatsappUrl = buildBookingWhatsAppUrl(formData);
+
+  bookingStatus.textContent = "ვინახავთ თქვენს მოთხოვნას WhatsApp-ზე…";
+
+  window.open(whatsappUrl, "_blank", "noopener,noreferrer");
+  form.reset();
 });
