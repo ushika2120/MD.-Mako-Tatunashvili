@@ -182,6 +182,15 @@ const closeProceduresMenu = () => {
   proceduresMenu.setAttribute("aria-hidden", "true");
 };
 
+const closeMobileMenu = () => {
+  navigation.classList.remove("open");
+  siteHeader.classList.remove("mobile-open");
+  closeProceduresMenu();
+  menuButton.setAttribute("aria-expanded", "false");
+  menuButton.setAttribute("aria-label", "მენიუს გახსნა");
+  menuButton.textContent = "☰";
+};
+
 navTrigger.addEventListener("click", () => {
   if (window.matchMedia("(max-width: 800px)").matches) {
     window.location.hash = "treatments";
@@ -225,7 +234,12 @@ proceduresMenu.querySelectorAll("a").forEach((link) =>
 );
 
 document.addEventListener("click", (event) => {
-  if (!siteHeader.contains(event.target)) closeProceduresMenu();
+  if (!siteHeader.contains(event.target)) {
+    closeProceduresMenu();
+    if (window.matchMedia("(max-width: 800px)").matches) {
+      closeMobileMenu();
+    }
+  }
 });
 
 document.addEventListener("keydown", (event) => {
