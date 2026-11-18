@@ -79,6 +79,103 @@ const updateHeaderState = () => {
 updateHeaderState();
 window.addEventListener("scroll", updateHeaderState, { passive: true });
 
+const scrollProgress = document.querySelector(".scroll-progress span");
+const parallaxImages = [
+  ...document.querySelectorAll(".doctor-photo > img, .results-photo > img"),
+];
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+const revealTargets = [
+  [".intro-grid > *", ""],
+  [".procedure-heading", ""],
+  [".procedure-card", ""],
+  [".doctor-photo", "left"],
+  [".doctor-copy", "right"],
+  [".results-photo", "left"],
+  [".results-copy", "right"],
+  [".feature-heading", ""],
+  [".feature-story", ""],
+  [".approach-head > *", ""],
+  [".step", ""],
+];
+
+revealTargets.forEach(([selector, direction]) => {
+  document.querySelectorAll(selector).forEach((element, index) => {
+    element.setAttribute("data-reveal", direction);
+    element.setAttribute(
+      "data-reveal-delay",
+      String(Math.min(index % 3 + 1, 3)),
+    );
+  });
+});
+
+if (!reduceMotion && "IntersectionObserver" in window) {
+  const revealObserver = new IntersectionObserver(
+    (entries, observer) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add("is-visible");
+        observer.unobserve(entry.target);
+      });
+    },
+    { threshold: 0.16, rootMargin: "0px 0px -45px" },
+  );
+
+  document.querySelectorAll("[data-reveal]").forEach((element) => {
+    revealObserver.observe(element);
+  });
+} else {
+  document.querySelectorAll("[data-reveal]").forEach((element) => {
+    element.classList.add("is-visible");
+  });
+}
+
+let scrollFrame;
+const updateScrollEffects = () => {
+  const scrollMax = document.documentElement.scrollHeight - window.innerHeight;
+  const progress =
+    scrollMax > 0 ? Math.min(window.scrollY / scrollMax, 1) : 0;
+  if (scrollProgress) {
+    scrollProgress.style.transform = `scaleX(${progress})`;
+  }
+
+  if (!reduceMotion) {
+    parallaxImages.forEach((image) => {
+      const rect = image.parentElement.getBoundingClientRect();
+      const viewportProgress =
+        (window.innerHeight - rect.top) /
+        (window.innerHeight + rect.height);
+      const offset = Math.max(-18, Math.min(18, (viewportProgress - 0.5) * 36));
+      image.style.transform = `scale(1.08) translateY(${offset}px)`;
+    });
+  }
+
+  scrollFrame = undefined;
+};
+
+window.addEventListener(
+  "scroll",
+  () => {
+    if (scrollFrame) return;
+    scrollFrame = window.requestAnimationFrame(updateScrollEffects);
+  },
+  { passive: true },
+);
+updateScrollEffects();
+
+document.querySelectorAll(".brand, .hero-logo-link").forEach((brandLink) => {
+  brandLink.addEventListener("click", (event) => {
+    event.preventDefault();
+    closeProceduresMenu();
+    navigation.classList.remove("open");
+    siteHeader.classList.remove("mobile-open");
+    menuButton.setAttribute("aria-expanded", "false");
+    menuButton.setAttribute("aria-label", "მენიუს გახსნა");
+    menuButton.textContent = "☰";
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+});
+
 const closeProceduresMenu = () => {
   siteHeader.classList.remove("menu-open");
   navTrigger.setAttribute("aria-expanded", "false");
