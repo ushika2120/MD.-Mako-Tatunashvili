@@ -1124,6 +1124,18 @@ footer {
 }
 
 @media (max-width: 800px) {
+  .mega-menu {
+    top: 76px;
+  }
+  .mega-menu-inner {
+    max-height: calc(100vh - 76px);
+    grid-template-columns: 1fr;
+    gap: 22px;
+    overflow-y: auto;
+  }
+  .mega-feature {
+    min-height: 150px;
+  }
   .wrap {
     width: min(100% - 40px, 620px);
   }

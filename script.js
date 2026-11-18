@@ -193,12 +193,9 @@ const closeMobileMenu = () => {
 
 navTrigger.addEventListener("click", () => {
   if (window.matchMedia("(max-width: 800px)").matches) {
-    window.location.hash = "treatments";
-    navigation.classList.remove("open");
-    siteHeader.classList.remove("mobile-open");
-    menuButton.setAttribute("aria-expanded", "false");
-    menuButton.setAttribute("aria-label", "მენიუს გახსნა");
-    menuButton.textContent = "☰";
+    const isOpen = siteHeader.classList.toggle("menu-open");
+    navTrigger.setAttribute("aria-expanded", String(isOpen));
+    proceduresMenu.setAttribute("aria-hidden", String(!isOpen));
     return;
   }
 
