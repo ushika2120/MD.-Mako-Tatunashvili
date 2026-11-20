@@ -66,6 +66,110 @@ document.querySelectorAll("[data-photo]").forEach((image) => {
   if (source) image.src = source;
 });
 
+const serviceCarousel = document.querySelector("[data-service-carousel]");
+if (serviceCarousel) {
+  const track = serviceCarousel.querySelector(".service-carousel-track");
+  const slides = [...serviceCarousel.querySelectorAll(".service-carousel-slide")];
+  const paginationButtons = [
+    ...serviceCarousel.querySelectorAll("[data-carousel-to]"),
+  ];
+  const previousButton = serviceCarousel.querySelector(
+    "[data-carousel-previous]",
+  );
+  const nextButton = serviceCarousel.querySelector("[data-carousel-next]");
+  const pauseButton = serviceCarousel.querySelector("[data-carousel-pause]");
+  const status = serviceCarousel.querySelector("[data-carousel-status]");
+  const prefersReducedMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)",
+  ).matches;
+  let activeSlide = 0;
+  let isPaused = prefersReducedMotion;
+  let isPointerOver = false;
+  let isFocusWithin = false;
+  let autoplayTimer;
+
+  const stopAutoplay = () => {
+    window.clearInterval(autoplayTimer);
+    autoplayTimer = undefined;
+  };
+
+  const showSlide = (index) => {
+    activeSlide = (index + slides.length) % slides.length;
+    track.style.transform = `translateX(-${activeSlide * 100}%)`;
+
+    slides.forEach((slide, slideIndex) => {
+      const isActive = slideIndex === activeSlide;
+      slide.setAttribute("aria-hidden", String(!isActive));
+      slide.inert = !isActive;
+    });
+
+    paginationButtons.forEach((button, buttonIndex) => {
+      button.setAttribute("aria-pressed", String(buttonIndex === activeSlide));
+    });
+
+    status.textContent = `${String(activeSlide + 1).padStart(2, "0")} / ${String(slides.length).padStart(2, "0")}`;
+  };
+
+  const updateAutoplay = () => {
+    stopAutoplay();
+    pauseButton.hidden = prefersReducedMotion;
+    pauseButton.setAttribute("aria-pressed", String(isPaused));
+    pauseButton.setAttribute(
+      "aria-label",
+      isPaused ? "სლაიდშოუს გაგრძელება" : "სლაიდშოუს შეჩერება",
+    );
+    pauseButton.textContent = isPaused ? "▶" : "Ⅱ";
+
+    if (!isPaused && !isPointerOver && !isFocusWithin) {
+      autoplayTimer = window.setInterval(
+        () => showSlide(activeSlide + 1),
+        6000,
+      );
+    }
+  };
+
+  previousButton.addEventListener("click", () => showSlide(activeSlide - 1));
+  nextButton.addEventListener("click", () => showSlide(activeSlide + 1));
+  paginationButtons.forEach((button, index) => {
+    button.addEventListener("click", () => showSlide(index));
+  });
+  pauseButton.addEventListener("click", () => {
+    isPaused = !isPaused;
+    updateAutoplay();
+  });
+
+  serviceCarousel.addEventListener("pointerenter", () => {
+    isPointerOver = true;
+    updateAutoplay();
+  });
+  serviceCarousel.addEventListener("pointerleave", () => {
+    isPointerOver = false;
+    updateAutoplay();
+  });
+  serviceCarousel.addEventListener("focusin", () => {
+    isFocusWithin = true;
+    updateAutoplay();
+  });
+  serviceCarousel.addEventListener("focusout", (event) => {
+    if (!serviceCarousel.contains(event.relatedTarget)) {
+      isFocusWithin = false;
+      updateAutoplay();
+    }
+  });
+  serviceCarousel.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      showSlide(activeSlide - 1);
+    } else if (event.key === "ArrowRight") {
+      event.preventDefault();
+      showSlide(activeSlide + 1);
+    }
+  });
+
+  showSlide(activeSlide);
+  updateAutoplay();
+}
+
 const menuButton = document.querySelector(".menu-toggle");
 const navigation = document.querySelector(".nav-links");
 const siteHeader = document.querySelector(".site-header");
