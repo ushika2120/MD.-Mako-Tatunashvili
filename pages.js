@@ -3,6 +3,58 @@ const menuButton = document.querySelector(".menu-toggle");
 const navigation = document.querySelector(".nav-links");
 const navTrigger = document.querySelector(".nav-trigger");
 const proceduresMenu = document.querySelector(".mega-menu");
+const headerActions = document.querySelector(".header-actions");
+
+const socialAccounts = [
+  {
+    label: "Facebook",
+    href: "https://www.facebook.com/profile.php?id=61591787280473",
+    icon: "facebook",
+  },
+  {
+    label: "Instagram",
+    href: "https://www.instagram.com/tatunashvili_mako/",
+    icon: "instagram",
+  },
+  { label: "TikTok", href: "https://www.tiktok.com/", icon: "tiktok" },
+  {
+    label: "WhatsApp",
+    href: "https://wa.me/995577779952",
+    icon: "phone",
+  },
+  {
+    label: "ლოკაცია",
+    href: "https://maps.app.goo.gl/arwboGLar9Eo3XF78",
+    icon: "location",
+  },
+];
+
+const socialLinks = document.createElement("div");
+socialLinks.className = "social-links header-social-links";
+socialLinks.setAttribute("aria-label", "სოციალური ქსელები და ლოკაცია");
+
+socialAccounts.forEach((account) => {
+  const link = document.createElement("a");
+  link.className = "social-link";
+  link.href = account.href;
+  link.target = "_blank";
+  link.rel = "noopener noreferrer";
+  link.setAttribute("aria-label", account.label);
+  link.title = account.label;
+
+  const icon = document.createElement("span");
+  icon.className = `social-icon social-icon-${account.icon}`;
+  icon.setAttribute("aria-hidden", "true");
+
+  link.append(icon);
+  socialLinks.append(link);
+});
+
+headerActions.insertBefore(socialLinks, headerActions.firstChild);
+const mobileSocialLinks = socialLinks.cloneNode(true);
+mobileSocialLinks.classList.remove("header-social-links");
+mobileSocialLinks.classList.add("header-mobile-social-links");
+navigation.append(mobileSocialLinks);
 
 const closeMobileMenu = () => {
   navigation.classList.remove("open");
@@ -136,6 +188,71 @@ if (relatedLinks) {
     }),
   );
 }
+
+const footerRow = document.querySelector(".footer-row");
+if (footerRow) {
+  const footerSocialLinks = socialLinks.cloneNode(true);
+  footerSocialLinks.classList.remove("header-social-links");
+  footerSocialLinks.classList.add("page-footer-social-links");
+  footerRow.insertBefore(
+    footerSocialLinks,
+    footerRow.querySelector(".footer-cta"),
+  );
+
+  const existingFooterLinks = footerRow.querySelector(".footer-links");
+  if (existingFooterLinks) existingFooterLinks.remove();
+
+  const footerNavigation = document.createElement("nav");
+  footerNavigation.className = "wrap page-footer-navigation";
+  footerNavigation.setAttribute("aria-label", "სერვისები და ინფორმაცია");
+
+  const footerSections = [
+    {
+      title: "მომსახურებები",
+      className: "page-footer-service-links",
+      links: services.map((service) => ({
+        title: service.title,
+        href: service.href,
+      })),
+    },
+    {
+      title: "სასარგებლო ბმულები",
+      className: "page-footer-info-links",
+      links: [
+        { title: "მიდგომა", href: "../index.html#approach" },
+        { title: "ექიმის შესახებ", href: "../index.html#doctor" },
+        { title: "პროცედურები", href: "../index.html#treatments" },
+        { title: "კონტაქტი", href: "../index.html#booking" },
+      ],
+    },
+  ];
+
+  footerSections.forEach((section) => {
+    const group = document.createElement("div");
+    group.className = "page-footer-group";
+
+    const heading = document.createElement("h2");
+    heading.textContent = section.title;
+
+    const linkList = document.createElement("div");
+    linkList.className = `page-footer-link-list ${section.className}`;
+
+    section.links.forEach((item) => {
+      const link = document.createElement("a");
+      link.href = item.href;
+      link.textContent = item.title;
+      linkList.append(link);
+    });
+
+    group.append(heading, linkList);
+    footerNavigation.append(group);
+  });
+
+  footerRow.after(footerNavigation);
+}
+
+const footerMap = document.querySelector("footer .footer-map");
+if (footerMap) footerMap.remove();
 
 document.querySelectorAll(".content-grid > *, .benefit, .page-related").forEach((element) => {
   element.setAttribute("data-page-reveal", "");
